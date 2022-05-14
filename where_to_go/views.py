@@ -4,4 +4,4 @@ from django.shortcuts import render
 
 
 def show_maps(request):
-    return render(request, 'product_page.html')
+    return render(request, 'index.html')
