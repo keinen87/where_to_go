@@ -1,12 +1,9 @@
 from turtle import title
 from django.contrib import admin
-from .models import Place
+from .models import Place, Image
 
 # Register your models here.
 
 
-class Place_admin(admin.ModelAdmin):
-    list_display = ("title",)
-
-
-admin.site.register(Place, Place_admin)
+admin.site.register(Place,)
+admin.site.register(Image,)

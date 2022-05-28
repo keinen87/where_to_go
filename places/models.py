@@ -9,6 +9,31 @@ from django.db import models
 class Place(models.Model):
     title = models.CharField(max_length=200, verbose_name="Заголовок",)
     description_long = models.TextField(verbose_name="Длинное описание",)
-    description_short = models.TextField(verbose_name="Короткое описание",)
+    description_short = models.TextField(
+        verbose_name="Короткое описание",
+        null=True
+    )
     latitude = models.FloatField(verbose_name="Широта")
     longitude = models.FloatField(verbose_name="Долгота")
+
+    def __str__(self):
+        return f"{self.title}"
+
+
+class Image(models.Model):
+    place = models.ForeignKey(
+        Place,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="images",
+        verbose_name="Место",
+    )
+
+    image = models.ImageField(
+        verbose_name="Изображение",
+        null=True,
+        upload_to="images"
+    )
+
+    def __str__(self) -> str:
+        return f"{self.place.title}"
