@@ -15,6 +15,7 @@ class Place(models.Model):
     )
     latitude = models.FloatField(verbose_name="Широта")
     longitude = models.FloatField(verbose_name="Долгота")
+    place_id = models.CharField(max_length=200, verbose_name="id")
 
     def __str__(self):
         return f"{self.title}"
@@ -31,8 +32,7 @@ class Image(models.Model):
 
     image = models.ImageField(
         verbose_name="Изображение",
-        null=True,
-        upload_to="images"
+        upload_to="images",
     )
 
     def __str__(self) -> str:
