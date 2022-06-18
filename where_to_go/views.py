@@ -1,18 +1,14 @@
 import json
 import os
+from urllib import response
 
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render
 from places.models import Place
 
 
-def get_json_local():
-    geo_json = {
-        "type": "FeatureCollection",
-        "features": []
-    }
-
+def append_json_local(geo_json):
     folder_path = f"{os.path.join(settings.BASE_DIR, 'static')}/places/"
     fiels = os.listdir(folder_path)
 
@@ -37,37 +33,63 @@ def get_json_local():
     return geo_json
 
 
-def get_json_db(places):
+def append_json_db(geo_json):
+    places = Place.objects.all()
+
     for place in places:
-        json_path = f"{os.path.join(settings.BASE_DIR, 'static')}/places/{place.title}.json"
-
-        if not os.path.exists(json_path):
-            create_json(place, json_path)
-
-    return
-
-
-def create_json(place, json_path):
-    with open(json_path, "w", encoding="utf8") as file:
-        deatils_url = {
-            "title": place.title,
-            "imgs": [image.image.url for image in place.images.all()],
-            "description_short": place.description_short,
-            "description_long": place.description_long,
-            "coordinates": {
-                "lat": place.latitude,
-                "lng": place.longitude
+        geo_json["features"].append({
+            "type": "Feature",
+            "geometry": {
+                    "type": "Point",
+                    "coordinates": [place.longitude, place.latitude]
+            },
+            "properties": {
+                "title": place.title,
+                "placeId": place.title,
+                "detailsUrl": f"places/{place.place_id}"
             }
-        }
+        })
 
-        json.dump(deatils_url, file, ensure_ascii=False, indent=4)
+    return geo_json
 
 
 def show_maps(request):
-    places = Place.objects.all()
-    get_json_db(places)
-    geo_json_local = get_json_local()
+    geo_json = {
+        "type": "FeatureCollection",
+        "features": []
+    }
+    append_json_db(geo_json)
+    append_json_local(geo_json)
 
-    data = {"GeoJSON": geo_json_local}
+    data = {"GeoJSON": geo_json}
 
     return render(request, "index.html", context=data)
+
+
+def post_detail(request, id):
+    try:
+        place = Place.objects.get(place_id=id)
+    except Place.DoesNotExist:
+        raise Http404("No MyModel matches the given query.")
+
+    response = {
+        "title": place.title,
+        "imgs": [image.image.url for image in place.images.all()],
+        "description_short": place.description_short,
+        "description_long": place.description_long,
+        "coordinates": {
+            "lat": place.latitude,
+            "lng": place.longitude
+        }
+    }
+
+    response = JsonResponse(
+        response,
+        safe=False,
+        json_dumps_params={
+            'ensure_ascii': False,
+            'indent': 4
+        }
+    )
+
+    return response

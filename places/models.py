@@ -24,7 +24,7 @@ class Place(models.Model):
 class Image(models.Model):
     place = models.ForeignKey(
         Place,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         null=True,
         related_name="images",
         verbose_name="Место",
