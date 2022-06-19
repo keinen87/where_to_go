@@ -1,6 +1,3 @@
-from msilib.schema import Class
-from operator import mod
-from statistics import mode
 from django.db import models
 
 # Create your models here.
@@ -16,9 +13,18 @@ class Place(models.Model):
     latitude = models.FloatField(verbose_name="Широта")
     longitude = models.FloatField(verbose_name="Долгота")
     place_id = models.CharField(max_length=200, verbose_name="id")
+    order = models.PositiveSmallIntegerField(
+        default=0,
+        blank=False,
+        null=False,
+        verbose_name="Позиция",
+    )
 
     def __str__(self):
         return f"{self.title}"
+
+    class Meta():
+        ordering = ['order']
 
 
 class Image(models.Model):
@@ -35,5 +41,15 @@ class Image(models.Model):
         upload_to="images",
     )
 
+    order = models.PositiveSmallIntegerField(
+        default=0,
+        blank=False,
+        null=False,
+        verbose_name="Позиция",
+    )
+
     def __str__(self) -> str:
         return f"{self.place.title}"
+
+    class Meta():
+        ordering = ['order']

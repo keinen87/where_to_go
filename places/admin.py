@@ -1,4 +1,4 @@
-from turtle import width
+from adminsortable2.admin import SortableAdminMixin, SortableInlineAdminMixin
 from django.contrib import admin
 from django.utils.html import format_html
 
@@ -9,10 +9,10 @@ from .models import Image, Place
 
 @admin.register(Image)
 class ImageAdmin(admin.ModelAdmin):
-    pass
+    ordering = ["order"]
 
 
-class ImageInline(admin.TabularInline):
+class ImageInline(SortableInlineAdminMixin, admin.StackedInline):
     def headshot_image(self, image):
         html = format_html(
             """<img src="{}" width="{}" height={} />""",
@@ -23,12 +23,13 @@ class ImageInline(admin.TabularInline):
 
         return html
 
-    readonly_fields = ["headshot_image"]
+    headshot_image.short_description = 'Превью'
     model = Image
-    fields = (("image",  "headshot_image"))
+    readonly_fields = ["headshot_image"]
+    fields = ("order", ("image",  "headshot_image"),)
 
 
 @admin.register(Place)
-class PlaceAdmin(admin.ModelAdmin):
+class PlaceAdmin(SortableAdminMixin, admin.ModelAdmin):
     inlines = [ImageInline]
-    list_display = ["title", "place_id"]
+    list_display = ["title", "place_id", ]
