@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import os
 from pathlib import Path
+from environs import Env
+
 
 from django.forms import Media
 
@@ -23,12 +25,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-gb^_=oo=-+9!3cxb!ohbds%%frzqwg8)k!xnt!vwk09tg2n)#s'
+ENV = Env()
+ENV.read_env()
+
+SECRET_KEY = ENV("GCP_PROJECT_ID")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = ENV.bool("DEBUG")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ENV.list("ALLOWED_HOSTS")
 
 
 # Application definition
@@ -41,7 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'adminsortable2',
-    'places'
+    'places',
+    'tinymce'
 ]
 
 MIDDLEWARE = [
