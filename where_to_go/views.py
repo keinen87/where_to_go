@@ -1,9 +1,8 @@
 import json
 import os
-from urllib import response
 
 from django.conf import settings
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, JsonResponse
 from django.shortcuts import render
 from places.models import Place
 
